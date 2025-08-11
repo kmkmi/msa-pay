@@ -1,0 +1,13 @@
+rootProject.name = 'msa-pay'
+
+include 'common'
+include 'membership-service'
+include 'banking-service'
+include 'money-service'
+include 'payment-service'
+include 'remittance-service'
+include 'settlement-service'
+include 'logging-consumer'
+include 'saga-orchestrator'
+
+

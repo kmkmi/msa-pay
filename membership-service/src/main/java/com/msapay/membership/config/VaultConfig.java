@@ -1,0 +1,33 @@
+package com.msapay.membership.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.vault.client.VaultEndpoint;
+import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.support.VaultToken;
+
+// Vault 설정을 하게 돼요
+@Configuration
+@ConditionalOnProperty(name = "vault.enabled", havingValue = "true")
+public class VaultConfig {
+    @Value("${spring.cloud.vault.token}")
+    private String vaultToken;
+    @Value("${spring.cloud.vault.scheme}")
+    private String vaultScheme;
+    @Value("${spring.cloud.vault.host}")
+    private String vaultHost;
+    @Value("${spring.cloud.vault.port}")
+    private int vaultPort;
+
+    @Bean
+    public VaultTemplate vaultTemplate(){
+        VaultEndpoint endpoint = VaultEndpoint.create(vaultHost, vaultPort);
+        endpoint.setScheme(vaultScheme); // http
+        // vaultScheme: http, https
+
+        VaultTemplate template = new VaultTemplate(endpoint, ()-> VaultToken.of(vaultToken));
+        return template;
+    }
+}

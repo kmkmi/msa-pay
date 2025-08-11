@@ -1,0 +1,47 @@
+[versions]
+springBoot = "2.5.2"
+springDependencyManagement = "1.1.4"
+lombok = "1.18.32"
+flyway = "10.12.0"
+mysqlConnector = "8.4.0"
+testcontainers = "1.19.7"
+
+[libraries]
+# Spring Boot
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
+spring-boot-starter-data-mongodb = { module = "org.springframework.boot:spring-boot-starter-data-mongodb" }
+spring-boot-starter-data-elasticsearch = { module = "org.springframework.boot:spring-boot-starter-data-elasticsearch" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+
+# Database & Migration
+mysql-connector = { module = "com.mysql:mysql-connector-j", version.ref = "mysqlConnector" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
+
+# Lombok
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+
+# Testing
+spring-security-test = { module = "org.springframework.security:spring-security-test" }
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+
+testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = "testcontainers" }
+testcontainers-elasticsearch = { module = "org.testcontainers:elasticsearch", version.ref = "testcontainers" }
+testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+
+[bundles]
+spring-boot-starters = ["spring-boot-starter-web", "spring-boot-starter-data-jpa", "spring-boot-starter-data-redis", "spring-boot-starter-data-mongodb", "spring-boot-starter-data-elasticsearch", "spring-boot-starter-security", "spring-boot-starter-validation", "spring-boot-starter-actuator", "spring-kafka"]
+flyway = ["flyway-core", "flyway-mysql"]
+testcontainers = ["testcontainers-junit-jupiter", "testcontainers-mysql", "testcontainers-mongodb", "testcontainers-elasticsearch", "testcontainers-kafka"]
