@@ -11,8 +11,8 @@ public class Membership {
     @Getter private final String name;
     @Getter private final String email;
     @Getter private final String address;
-    @Getter private final boolean isValid;
-    @Getter private final boolean isCorp;
+    @Getter private final boolean valid;
+    @Getter private final boolean corp;
 
     @Getter private final String refreshToken;
     // Membership
@@ -23,8 +23,8 @@ public class Membership {
             , MembershipName membershipName
             , MembershipEmail membershipEmail
             , MembershipAddress membershipAddress
-            , MembershipIsValid membershipIsValid
-            , MembershipIsCorp membershipIsCorp
+            , MembershipValid membershipValid
+            , MembershipCorp membershipCorp
             , MembershipRefreshToken membershipRefreshToken
     ){
         return new Membership(
@@ -32,64 +32,43 @@ public class Membership {
                 membershipName.nameValue,
                 membershipEmail.emailValue,
                 membershipAddress.addressValue,
-                membershipIsValid.isValidValue,
-                membershipIsCorp.isCorpValue,
+                membershipValid.validValue,
+                membershipCorp.corpValue,
                 membershipRefreshToken.refreshToken
         );
     }
 
     @Value
     public static class MembershipId {
-        public MembershipId(String value) {
-            this.membershipId = value;
-        }
-        String membershipId ;
+        String membershipId;
     }
 
     @Value
     public static class MembershipName {
-        public MembershipName(String value) {
-            this.nameValue = value;
-        }
-        String nameValue ;
+        String nameValue;
     }
     @Value
     public static class MembershipEmail {
-        public MembershipEmail(String value) {
-            this.emailValue = value;
-        }
         String emailValue;
     }
 
     @Value
     public static class MembershipAddress {
-        public MembershipAddress(String value) {
-            this.addressValue = value;
-        }
         String addressValue;
     }
 
     @Value
-    public static class MembershipIsValid {
-        public MembershipIsValid(boolean value) {
-            this.isValidValue = value;
-        }
-        boolean isValidValue;
+    public static class MembershipValid {
+        boolean validValue;
     }
 
     @Value
-    public static class MembershipIsCorp {
-        public MembershipIsCorp(boolean value) {
-            this.isCorpValue = value;
-        }
-        boolean isCorpValue;
+    public static class MembershipCorp {
+        boolean corpValue;
     }
 
     @Value
     public static class MembershipRefreshToken {
-        public MembershipRefreshToken(String value) {
-            this.refreshToken = value;
-        }
         String refreshToken;
     }
 }

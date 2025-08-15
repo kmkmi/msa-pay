@@ -1,6 +1,7 @@
 package com.msapay.membership.service;
 
 import com.msapay.common.UseCase;
+import com.msapay.membership.persistence.MembershipDto;
 import com.msapay.membership.persistence.MembershipJpaEntity;
 import com.msapay.membership.persistence.MembershipMapper;
 import com.msapay.membership.service.usecase.AuthMembershipUseCase;
@@ -13,7 +14,6 @@ import com.msapay.membership.service.port.ModifyMembershipPort;
 import com.msapay.membership.domain.JwtToken;
 import com.msapay.membership.domain.Membership;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
@@ -29,11 +29,11 @@ public class AuthMembershipService implements AuthMembershipUseCase {
     public JwtToken loginMembership(LoginMembershipCommand command) {
 
         String membershipId = command.getMembershipId();
-        MembershipJpaEntity membershipJpaEntity = findMembershipPort.findMembership(
+        MembershipDto membershipDto = findMembershipPort.findMembership(
                 new Membership.MembershipId(membershipId)
         );
 
-        if (membershipJpaEntity.isValid()){
+        if (membershipDto.isValid()){
             String jwtToken = authMembershipPort.generateJwtToken(
                     new Membership.MembershipId(membershipId)
             );
@@ -44,11 +44,11 @@ public class AuthMembershipService implements AuthMembershipUseCase {
             // membership jpa 내에, refresh token 을 저장한다.
             modifyMembershipPort.modifyMembership(
                     new Membership.MembershipId(membershipId),
-                    new Membership.MembershipName(membershipJpaEntity.getName()),
-                    new Membership.MembershipEmail(membershipJpaEntity.getEmail()),
-                    new Membership.MembershipAddress(membershipJpaEntity.getAddress()),
-                    new Membership.MembershipIsValid(membershipJpaEntity.isValid()),
-                    new Membership.MembershipIsCorp(membershipJpaEntity.isCorp()),
+                    new Membership.MembershipName(membershipDto.getName()),
+                    new Membership.MembershipEmail(membershipDto.getEmail()),
+                    new Membership.MembershipAddress(membershipDto.getAddress()),
+                    new Membership.MembershipValid(membershipDto.isValid()),
+                    new Membership.MembershipCorp(membershipDto.isCorp()),
                     new Membership.MembershipRefreshToken(refreshToken)
             );
 
@@ -71,15 +71,15 @@ public class AuthMembershipService implements AuthMembershipUseCase {
             Membership.MembershipId membershipId = authMembershipPort.parseMembershipIdFromToken(requestedRefreshToken);
             String membershipIdString = membershipId.getMembershipId();
 
-            MembershipJpaEntity membershipJpaEntity = findMembershipPort.findMembership(membershipId);
-            if(!membershipJpaEntity.getRefreshToken().equals(
+            MembershipDto membershipDto = findMembershipPort.findMembership(membershipId);
+            if(!membershipDto.getRefreshToken().equals(
                     command.getRefreshToken()
             )) {
                 return null;
             }
 
             // 고객의 refresh token 정보와, 요청받은 refresh token 정보가 일치하는지 확인 된 상태.
-            if (membershipJpaEntity.isValid()){
+            if (membershipDto.isValid()){
                 String newJwtToken = authMembershipPort.generateJwtToken(
                         new Membership.MembershipId(membershipIdString)
                 );
@@ -110,14 +110,14 @@ public class AuthMembershipService implements AuthMembershipUseCase {
             Membership.MembershipId membershipId = authMembershipPort.parseMembershipIdFromToken(jwtToken);
             String membershipIdString = membershipId.getMembershipId();
 
-            MembershipJpaEntity membershipJpaEntity = findMembershipPort.findMembership(membershipId);
-            if (!membershipJpaEntity.getRefreshToken().equals(
+            MembershipDto membershipDto = findMembershipPort.findMembership(membershipId);
+            if (!membershipDto.getRefreshToken().equals(
                     command.getJwtToken()
             )) {
                 return null;
             }
 
-            return mapper.mapToDomainEntity(membershipJpaEntity);
+            return mapper.mapToDto(membershipDto);
         }
         return null;
     }

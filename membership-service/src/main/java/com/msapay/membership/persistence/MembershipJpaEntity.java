@@ -1,41 +1,37 @@
 package com.msapay.membership.persistence;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "membership")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@Builder
 public class MembershipJpaEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long membershipId;
 
     private String name;
-
     private String address;
-
     private String email;
-
-    private boolean isValid;
-
-    private boolean isCorp;
+    private boolean valid;
+    private boolean corp;
     private String refreshToken;
 
-    public MembershipJpaEntity(String name, String address, String email, boolean isValid, boolean isCorp, String refreshToken) {
-        this.name = name;
-        this.address = address;
-        this.email = email;
-        this.isValid = isValid;
-        this.isCorp = isCorp;
-        this.refreshToken = refreshToken;
+    public static MembershipJpaEntity of(String name, String address, String email, boolean valid, boolean corp, String refreshToken) {
+        return MembershipJpaEntity.builder()
+                .membershipId(null) // 신규 생성이므로 PK는 null로 지정
+                .name(name)
+                .address(address)
+                .email(email)
+                .valid(valid)
+                .corp(corp)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Override
@@ -45,23 +41,9 @@ public class MembershipJpaEntity {
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
-                ", isValid=" + isValid +
-                ", isCorp=" + isCorp +
-                ", refreshToken=" + refreshToken +
+                ", valid=" + valid +
+                ", corp=" + corp +
+                ", refreshToken='" + refreshToken + '\'' +
                 '}';
-    }
-
-    public MembershipJpaEntity(Long membershipId, String name, String address, String email, boolean isValid, boolean isCorp, String refreshToken) {
-        this.membershipId = membershipId;
-        this.name = name;
-        this.address = address;
-        this.email = email;
-        this.isValid = isValid;
-        this.isCorp = isCorp;
-        this.refreshToken = refreshToken;
-    }
-
-    public MembershipJpaEntity clone() {
-        return new MembershipJpaEntity(this.membershipId, this.name, this.address, this.email, this.isValid, this.isCorp, this.refreshToken);
     }
 }

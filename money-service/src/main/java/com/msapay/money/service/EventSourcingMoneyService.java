@@ -70,7 +70,7 @@ public class EventSourcingMoneyService implements IncreaseMoneyRequestUseCase {
             MoneyAggregate aggregate = getOrCreateMoneyAggregate(aggregateId, command.getTargetMembershipId());
             
             // 3. 머니 증가 요청 이벤트 발생
-            String taskId = isAsync ? UUID.randomUUID().toString() : "sync-" + UUID.randomUUID().toString();
+            String taskId = isAsync ? UUID.randomUUID().toString() : "sync-" + UUID.randomUUID();
             aggregate.requestMoneyIncrease(command.getAmount(), taskId);
             
             // 4. 어그리게이트 저장 (이벤트 저장)

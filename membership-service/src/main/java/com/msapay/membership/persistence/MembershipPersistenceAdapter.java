@@ -13,84 +13,114 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+
 @PersistenceAdapter
 @RequiredArgsConstructor
 public class MembershipPersistenceAdapter implements RegisterMembershipPort, FindMembershipPort, ModifyMembershipPort {
     private final SpringDataMembershipRepository membershipRepository;
     @Autowired(required = false)
     private VaultAdapter vaultAdapter;
+
+    private String encryptIfNeeded(String plainText) {
+        return (vaultAdapter != null) ? vaultAdapter.encrypt(plainText) : plainText;
+    }
+    private String decryptIfNeeded(String encryptedText) {
+        return (vaultAdapter != null) ? vaultAdapter.decrypt(encryptedText) : encryptedText;
+    }
+
     @Override
-    public MembershipJpaEntity createMembership(Membership.MembershipName membershipName, Membership.MembershipEmail membershipEmail, Membership.MembershipAddress membershipAddress, Membership.MembershipIsValid membershipIsValid, Membership.MembershipIsCorp membershipIsCorp) {
-        // email 만 암호화 해보는 것으로 결정.
-        String encryptedEmail = (vaultAdapter != null)
-                ? vaultAdapter.encrypt(membershipEmail.getEmailValue())
-                : membershipEmail.getEmailValue();
-        MembershipJpaEntity jpaEntity = new MembershipJpaEntity(
+    public MembershipDto createMembership(Membership.MembershipName membershipName, Membership.MembershipEmail membershipEmail, Membership.MembershipAddress membershipAddress, Membership.MembershipValid membershipValid, Membership.MembershipCorp membershipCorp) {
+        String encryptedAddress = encryptIfNeeded(membershipAddress.getAddressValue());
+        String encryptedEmail = encryptIfNeeded(membershipEmail.getEmailValue());
+        MembershipJpaEntity jpaEntity = MembershipJpaEntity.of(
                 membershipName.getNameValue(),
-                membershipAddress.getAddressValue(),
+                encryptedAddress,
                 encryptedEmail,
-                membershipIsValid.isValidValue(),
-                membershipIsCorp.isCorpValue(),
+                membershipValid.isValidValue(),
+                membershipCorp.isCorpValue(),
                 ""
         );
         membershipRepository.save(jpaEntity);
 
-        MembershipJpaEntity clone = jpaEntity.clone();
-        clone.setEmail(membershipEmail.getEmailValue());
-
-        return clone;
+        // 복호화 없이 원본 그대로
+        return MembershipDto.of(
+                jpaEntity.getMembershipId(),
+                membershipName.getNameValue(),
+                membershipAddress.getAddressValue(),
+                membershipEmail.getEmailValue(),
+                membershipValid.isValidValue(),
+                membershipCorp.isCorpValue(),
+                ""
+        );
     }
 
     @Override
-    public MembershipJpaEntity findMembership(Membership.MembershipId membershipId) {
+    public MembershipDto findMembership(Membership.MembershipId membershipId) {
         MembershipJpaEntity membershipJpaEntity = membershipRepository.getById(Long.parseLong(membershipId.getMembershipId()));
+        String encryptedAddressString = membershipJpaEntity.getAddress();
+        String decryptedAddressString = decryptIfNeeded(encryptedAddressString);
         String encryptedEmailString = membershipJpaEntity.getEmail();
-        String decryptedEmailString = (vaultAdapter != null)
-                ? vaultAdapter.decrypt(encryptedEmailString)
-                : encryptedEmailString;
-        MembershipJpaEntity clone = membershipJpaEntity.clone();
-        clone.setEmail(decryptedEmailString);
-        return clone;
+        String decryptedEmailString = decryptIfNeeded(encryptedEmailString);
+        return MembershipDto.of(
+                membershipJpaEntity.getMembershipId(),
+                membershipJpaEntity.getName(),
+                decryptedAddressString,
+                decryptedEmailString,
+                membershipJpaEntity.isValid(),
+                membershipJpaEntity.isCorp(),
+                membershipJpaEntity.getRefreshToken()
+        );
     }
 
     @Override
-    public List<MembershipJpaEntity> findMembershipListByAddress(Membership.MembershipAddress membershipAddress) {
+    public List<MembershipDto> findMembershipListByAddress(Membership.MembershipAddress membershipAddress) {
         // 관악구, 서초구, 강남구 중 하나
         String address = membershipAddress.getAddressValue();
         List<MembershipJpaEntity> membershipJpaEntityList = membershipRepository.findByAddress(address);
-        List<MembershipJpaEntity> cloneList = new ArrayList<>();
+        List<MembershipDto> membershipDtoList = new ArrayList<>();
 
         for (MembershipJpaEntity membershipJpaEntity : membershipJpaEntityList) {
+            String encryptedAddressString = membershipJpaEntity.getAddress();
+            String decryptedAddressString = decryptIfNeeded(encryptedAddressString);
             String encryptedEmailString = membershipJpaEntity.getEmail();
-            String decryptedEmailString = (vaultAdapter != null)
-                    ? vaultAdapter.decrypt(encryptedEmailString)
-                    : encryptedEmailString;
-            MembershipJpaEntity clone = membershipJpaEntity.clone();
-            clone.setEmail(decryptedEmailString);
-            cloneList.add(clone);
+            String decryptedEmailString = decryptIfNeeded(encryptedEmailString);
+            membershipDtoList.add(MembershipDto.of(
+                    membershipJpaEntity.getMembershipId(),
+                    membershipJpaEntity.getName(),
+                    decryptedAddressString,
+                    decryptedEmailString,
+                    membershipJpaEntity.isValid(),
+                    membershipJpaEntity.isCorp(),
+                    membershipJpaEntity.getRefreshToken()
+            ));
         }
-        return cloneList;
+        return membershipDtoList;
     }
 
     @Override
-    public MembershipJpaEntity modifyMembership(Membership.MembershipId membershipId, Membership.MembershipName membershipName, Membership.MembershipEmail membershipEmail, Membership.MembershipAddress membershipAddress, Membership.MembershipIsValid membershipIsValid, Membership.MembershipIsCorp membershipIsCorp, Membership.MembershipRefreshToken membershipRefreshToken) {
+    public MembershipDto modifyMembership(Membership.MembershipId membershipId, Membership.MembershipName membershipName, Membership.MembershipEmail membershipEmail, Membership.MembershipAddress membershipAddress, Membership.MembershipValid membershipValid, Membership.MembershipCorp membershipCorp, Membership.MembershipRefreshToken membershipRefreshToken) {
         MembershipJpaEntity entity = membershipRepository.getById(Long.parseLong(membershipId.getMembershipId()));
 
-        // email 만 암호화 해보는 것으로 결정.
-        String encryptedEmail = (vaultAdapter != null)
-                ? vaultAdapter.encrypt(membershipEmail.getEmailValue())
-                : membershipEmail.getEmailValue();
+        String encryptedAddress = encryptIfNeeded(membershipAddress.getAddressValue());
+        String encryptedEmail = encryptIfNeeded(membershipEmail.getEmailValue());
         entity.setName(membershipName.getNameValue());
-        entity.setAddress(membershipAddress.getAddressValue());
+        entity.setAddress(encryptedAddress);
         entity.setEmail(encryptedEmail);
-        entity.setCorp(membershipIsCorp.isCorpValue());
-        entity.setValid(membershipIsValid.isValidValue());
+        entity.setCorp(membershipCorp.isCorpValue());
+        entity.setValid(membershipValid.isValidValue());
         entity.setRefreshToken(membershipRefreshToken.getRefreshToken());
         membershipRepository.save(entity);
 
         // Todo 리턴 전에 새로운 객체로 평문화된 멤버 정보를 리턴해 줘야 해요.
-        MembershipJpaEntity clone = entity.clone();
-        clone.setEmail(membershipEmail.getEmailValue());
-        return clone;
+        return MembershipDto.of(
+                entity.getMembershipId(),
+                membershipName.getNameValue(),
+                membershipAddress.getAddressValue(),
+                membershipEmail.getEmailValue(),
+                membershipValid.isValidValue(),
+                membershipCorp.isCorpValue(),
+                membershipRefreshToken.getRefreshToken()
+        );
     }
 }

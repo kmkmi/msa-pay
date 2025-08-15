@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface SpringDataMembershipRepository extends JpaRepository<MembershipJpaEntity, Long> {
 
-    @Query("SELECT e  FROM MembershipJpaEntity e WHERE e.address = :address")
+//    @Query("SELECT e  FROM MembershipJpaEntity e WHERE e.address = :address")
     List<MembershipJpaEntity> findByAddress(@Param("address") String address);
 }
