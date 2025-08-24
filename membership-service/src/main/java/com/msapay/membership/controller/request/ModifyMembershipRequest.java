@@ -13,6 +13,6 @@ public class ModifyMembershipRequest {
     private String address;
     private String email;
 
-    private boolean isValid;
-    private boolean isCorp;
+    private boolean valid;
+    private boolean corp;
 }

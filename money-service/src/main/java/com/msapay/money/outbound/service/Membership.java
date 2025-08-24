@@ -2,6 +2,7 @@ package com.msapay.money.outbound.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -12,6 +13,8 @@ public class Membership {
     private String name;
     private String email;
     private String address;
-    private boolean isValid;
-    private boolean isCorp;
+    private boolean valid;
+    private boolean corp;
+    private String refreshToken;
+
 }

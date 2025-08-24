@@ -1,9 +1,12 @@
 package com.msapay.banking.outbound.external.bank;
 
+import com.msapay.banking.controller.request.GetBankAccountBalanceRequest;
 import com.msapay.banking.service.port.RequestBankAccountInfoPort;
 import com.msapay.banking.service.port.RequestExternalFirmbankingPort;
 import com.msapay.common.ExternalSystemAdapter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Random;
 
 @ExternalSystemAdapter
 @RequiredArgsConstructor
@@ -28,5 +31,18 @@ public class BankAccountAdapter implements RequestBankAccountInfoPort, RequestEx
         // 그 결과를
         // 외부 은행의 실제 결과를 -> 패캠 페이의 FirmbankingResult 파싱
         return new FirmbankingResult(0);
+    }
+
+    @Override
+    public long getBankAccountBalance(GetBankAccountBalanceRequest request){
+        //random 생성
+        Random random = new Random();
+        return random.nextLong();
+    }
+
+    @Override
+    public boolean verifyCorpAccount(){
+        // 정상 가정
+        return true;
     }
 }

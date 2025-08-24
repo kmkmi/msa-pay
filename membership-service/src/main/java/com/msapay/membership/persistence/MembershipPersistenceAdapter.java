@@ -43,7 +43,6 @@ public class MembershipPersistenceAdapter implements RegisterMembershipPort, Fin
         );
         membershipRepository.save(jpaEntity);
 
-        // 복호화 없이 원본 그대로
         return MembershipDto.of(
                 jpaEntity.getMembershipId(),
                 membershipName.getNameValue(),

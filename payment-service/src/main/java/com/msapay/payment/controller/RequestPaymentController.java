@@ -8,6 +8,7 @@ import com.msapay.payment.service.usecase.RequestPaymentUseCase;
 import com.msapay.payment.domain.Payment;
 import com.msapay.common.WebAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public class RequestPaymentController {
 
     @PostMapping(path = "/payment/finish-settlement")
     void finishSettlement(@RequestBody FinishSettlementRequest request) {
-        System.out.println("request.getPaymentId() = " + request.getPaymentId());
+        log.info("request.getPaymentId() = {}", request.getPaymentId());
         requestPaymentUseCase.finishPayment(
                 new FinishSettlementCommand(
                         request.getPaymentId()

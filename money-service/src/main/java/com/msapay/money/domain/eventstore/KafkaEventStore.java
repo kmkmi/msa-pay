@@ -13,9 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Kafka 기반 이벤트 스토어 구현
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -24,7 +21,6 @@ public class KafkaEventStore implements EventStore {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
     
-    // 메모리 기반 이벤트 저장소 (실제 운영에서는 Redis나 DB 사용 권장)
     private final ConcurrentHashMap<String, List<MoneyDomainEvent>> eventStore = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, AtomicLong> versionStore = new ConcurrentHashMap<>();
     
@@ -81,9 +77,13 @@ public class KafkaEventStore implements EventStore {
         return CompletableFuture.completedFuture(eventStore.containsKey(aggregateId));
     }
     
-    /**
-     * 이벤트를 Kafka로 전송
-     */
+    @Override
+    public CompletableFuture<List<String>> getAllAggregateIds() {
+        return CompletableFuture.completedFuture(
+            new java.util.ArrayList<>(eventStore.keySet())
+        );
+    }
+    
     private void sendEventToKafka(String aggregateId, MoneyDomainEvent event) {
         try {
             String eventJson = objectMapper.writeValueAsString(event);

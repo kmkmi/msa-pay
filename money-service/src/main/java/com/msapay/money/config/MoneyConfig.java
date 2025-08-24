@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @ComponentScan({"com.msapay.common", "com.msapay.money"})
-@EntityScan("com.msapay.money.persistence")
-@EnableJpaRepositories("com.msapay.money.persistence")
+@EntityScan(basePackages = {"com.msapay.money.persistence", "com.msapay.common.outbox"})
+@EnableJpaRepositories(basePackages = {"com.msapay.money.persistence", "com.msapay.common.outbox"})
 public class MoneyConfig {
 }
 

@@ -9,16 +9,15 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
 @Component
+@Slf4j
 public class TaskConsumer {
-    private static final Logger logger = LoggerFactory.getLogger(TaskConsumer.class);
     
     private final KafkaConsumer<String, String> consumer;
     private final IncreaseMoneySaga increaseMoneySaga;
@@ -38,36 +37,36 @@ public class TaskConsumer {
 
         Thread consumerThread = new Thread(() -> {
             try {
-                logger.info("Starting Kafka consumer thread for topic: {}", topic);
+                log.info("Starting Kafka consumer thread for topic: {}", topic);
                 while (true) {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                     ObjectMapper mapper = new ObjectMapper();
                     for (ConsumerRecord<String, String> record : records) {
                         try {
-                            logger.debug("Processing message: {}", record.value());
+                            log.debug("Processing message: {}", record.value());
                             RechargingMoneyTask task = mapper.readValue(record.value(), RechargingMoneyTask.class);
                             
                             // Saga 시작 및 ID 반환
                             String sagaId = this.increaseMoneySaga.beginIncreaseMoneySaga(task);
                             
-                            logger.info("Successfully processed task: {} with saga tracking, sagaId: {}", 
+                            log.info("Successfully processed task: {} with saga tracking, sagaId: {}", 
                                 task.getTaskID(), sagaId);
                             
                             // 메시지 처리 성공 후 수동 커밋
                             consumer.commitSync();
-                            logger.debug("Offset committed successfully for record: {}", record.offset());
+                            log.debug("Offset committed successfully for record: {}", record.offset());
                                 
                         } catch (JsonProcessingException e) {
-                            logger.error("Failed to deserialize message: {}", record.value(), e);
+                            log.error("Failed to deserialize message: {}", record.value(), e);
                         } catch (Exception e) {
-                            logger.error("Failed to process message: {}", record.value(), e);
+                            log.error("Failed to process message: {}", record.value(), e);
                         }
                     }
                 }
             } catch (Exception e) {
-                logger.error("Consumer thread error", e);
+                log.error("Consumer thread error", e);
             } finally {
-                logger.info("Closing Kafka consumer");
+                log.info("Closing Kafka consumer");
                 consumer.close();
             }
         });

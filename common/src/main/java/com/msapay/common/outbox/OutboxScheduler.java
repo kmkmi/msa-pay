@@ -1,25 +1,27 @@
 package com.msapay.common.outbox;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.Properties;
 
+@Slf4j
 public class OutboxScheduler {
 
-    private final EntityManager entityManager;
+    private final OutboxRepository outboxRepository;
     private final KafkaProducer<String, String> producer;
     private final ObjectMapper objectMapper;
 
-    public OutboxScheduler(EntityManager entityManager, @Value("${kafka.clusters.bootstrapservers}") String bootstrapServers) {
-        this.entityManager = entityManager;
+    public OutboxScheduler(OutboxRepository outboxRepository, @Value("${kafka.clusters.bootstrapservers}") String bootstrapServers) {
+        this.outboxRepository = outboxRepository;
         this.objectMapper = new ObjectMapper();
 
         Properties props = new Properties();
@@ -34,9 +36,8 @@ public class OutboxScheduler {
     @Transactional
     public void publishEvents() {
         try {
-            var outboxEvents = entityManager.createQuery("SELECT o FROM Outbox o ORDER BY o.timestamp ASC", Outbox.class)
-                    .setMaxResults(50)
-                    .getResultList();
+            Pageable pageable = PageRequest.of(0, 50, Sort.by("timestamp").ascending());
+            var outboxEvents = outboxRepository.findAll(pageable).getContent();
 
             if (outboxEvents.isEmpty()) {
                 return;
@@ -48,19 +49,19 @@ public class OutboxScheduler {
                     producer.send(record, (metadata, exception) -> {
                         if (exception == null) {
                             try {
-                                entityManager.remove(outbox);
+                                outboxRepository.delete(outbox);
                             } catch (Exception e) {
                                 // Log error but don't fail the entire transaction
-                                System.err.println("Failed to remove outbox event: " + e.getMessage());
+                                log.error("Failed to remove outbox event: {}", e.getMessage(), e);
                             }
                         }
                     });
                 } catch (Exception e) {
-                    System.err.println("Failed to process outbox event: " + e.getMessage());
+                    log.error("Failed to process outbox event: {}", e.getMessage(), e);
                 }
             }
         } catch (Exception e) {
-            System.err.println("OutboxScheduler error: " + e.getMessage());
+            log.error("OutboxScheduler error: {}", e.getMessage(), e);
             // Don't rethrow to prevent scheduler from stopping
         }
     }

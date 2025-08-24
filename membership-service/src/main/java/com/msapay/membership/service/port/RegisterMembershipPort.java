@@ -10,7 +10,7 @@ public interface RegisterMembershipPort {
         Membership.MembershipName membershipName
         , Membership.MembershipEmail membershipEmail
         , Membership.MembershipAddress membershipAddress
-        , Membership.MembershipValid membershipIsValid
-            ,Membership.MembershipCorp membershipIsCorp
+        , Membership.MembershipValid membershipvalid
+            ,Membership.MembershipCorp membershipcorp
     );
 }

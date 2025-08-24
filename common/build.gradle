@@ -15,10 +15,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.slf4j:slf4j-api'
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
     
     // Java 11 호환 의존성
     implementation 'javax.persistence:javax.persistence-api:2.2'
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'
+    
+    // Kafka 의존성
+    implementation 'org.apache.kafka:kafka-clients:3.4.0'
 }
 
 test {

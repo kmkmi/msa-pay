@@ -12,8 +12,8 @@ public class Membership {
     private  String name;
     private  String email;
     private  String address;
-    private  boolean isValid;
-    private  boolean isCorp;
+    private  boolean valid;
+    private  boolean corp;
 
     @Override
     public String toString() {
@@ -22,8 +22,8 @@ public class Membership {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
-                ", isValid=" + isValid +
-                ", isCorp=" + isCorp +
+                ", valid=" + valid +
+                ", corp=" + corp +
                 '}';
     }
 }

@@ -6,5 +6,4 @@ import com.msapay.banking.controller.command.RequestFirmbankingCommand;
 
 public interface RequestFirmbankingUseCase {
     FirmbankingRequest requestFirmbanking(RequestFirmbankingCommand command);
-    void requestFirmbankingByEvent(RequestFirmbankingCommand command);
 }

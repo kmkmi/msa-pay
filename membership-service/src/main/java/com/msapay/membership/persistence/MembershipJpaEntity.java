@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Table(name = "membership")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Builder
 public class MembershipJpaEntity {

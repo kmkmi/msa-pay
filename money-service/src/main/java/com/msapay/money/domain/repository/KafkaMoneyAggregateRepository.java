@@ -58,6 +58,11 @@ public class KafkaMoneyAggregateRepository implements MoneyAggregateRepository {
                 return MoneyAggregate.fromEvents(aggregateId, events);
             });
     }
+
+    @Override
+    public CompletableFuture<List<String>> findAllIds() {
+        return eventStore.getAllAggregateIds();
+    }
     
     @Override
     public CompletableFuture<MoneyAggregate> findByMembershipId(String membershipId) {

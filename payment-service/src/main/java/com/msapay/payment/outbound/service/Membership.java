@@ -12,6 +12,6 @@ public class Membership {
     private String name;
     private String email;
     private String address;
-    private boolean isValid;
-    private boolean isCorp;
+    private boolean valid;
+    private boolean corp;
 }

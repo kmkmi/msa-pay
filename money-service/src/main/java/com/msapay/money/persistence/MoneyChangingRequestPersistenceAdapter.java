@@ -5,6 +5,7 @@ import com.msapay.money.service.port.CreateMemberMoneyPort;
 import com.msapay.money.service.port.GetMemberMoneyPort;
 import com.msapay.money.service.port.GetMemberMoneyListPort;
 import com.msapay.money.service.port.IncreaseMoneyPort;
+import com.msapay.money.service.port.UpdateMoneyChangingRequestStatusPort;
 import com.msapay.money.domain.MemberMoney;
 import com.msapay.money.controller.request.MoneyChangingRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort, CreateMemberMoneyPort, GetMemberMoneyPort, GetMemberMoneyListPort {
+public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort, CreateMemberMoneyPort, GetMemberMoneyPort, GetMemberMoneyListPort, UpdateMoneyChangingRequestStatusPort {
 
     private final SpringDataMoneyChangingRequestRepository moneyChangingRequestRepository;
 
@@ -30,7 +32,7 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
                         changingMoneyAmount.getChangingMoneyAmount(),
                         new Timestamp(System.currentTimeMillis()), 
                         moneyChangingStatus.getChangingMoneyStatus(),
-                        UUID.randomUUID()
+                        uuid.getUuid()
                 )
         );
     }
@@ -86,6 +88,23 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
     public List<MemberMoneyJpaEntity> getMemberMoneyPort(List<String> membershipIds) {
         // membershipIds 를 기준으로, 여러개의 MemberMoneyJpaEntity 를 가져온다.
         return memberMoneyRepository.fineMemberMoneyListByMembershipIds(convertMembershipIds(membershipIds));
+    }
+
+    @Override
+    public boolean updateMoneyChangingRequestStatus(String uuid, int status) {
+        try {
+            // UUID로 MoneyChangingRequest를 찾아서 상태를 업데이트
+            Optional<MoneyChangingRequestJpaEntity> entityOpt = moneyChangingRequestRepository.findByUuid(uuid);
+            if (entityOpt.isPresent()) {
+                MoneyChangingRequestJpaEntity entity = entityOpt.get();
+                entity.setChangingMoneyStatus(status);
+                moneyChangingRequestRepository.save(entity);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private List<Long> convertMembershipIds(List<String> membershipIds) {

@@ -62,6 +62,7 @@ public class RequestRemittanceService implements RequestRemittanceUseCase {
             boolean remittanceResult2 ;
             remittanceResult1 = moneyPort.requestMoneyDecrease(command.getFromMembershipId(), command.getAmount());
             remittanceResult2 = moneyPort.requestMoneyIncrease(command.getToMembershipId(), command.getAmount());
+            // 실패 시나리오 이벤트 드리븐으로 개선
             if (!remittanceResult1 || !remittanceResult2) {
                 return null;
             }
@@ -70,8 +71,12 @@ public class RequestRemittanceService implements RequestRemittanceUseCase {
             // 3-2. 외부 은행 계좌
             // 외부 은행 계좌가 적절한지 확인 (banking svc)
             // 법인계좌 -> 외부 은행 계좌 펌뱅킹 요청 (banking svc)
-            boolean remittanceResult = bankingPort.requestFirmbanking(command.getToBankName(), command.getToBankAccountNumber(), command.getAmount());
-            if (!remittanceResult) {
+            boolean remittanceResult1 = bankingPort.requestFirmbanking(command.getToBankName(), command.getToBankAccountNumber(), command.getAmount());
+            if (!remittanceResult1) {
+                return null;
+            }
+            boolean remittanceResult2 = moneyPort.requestMoneyDecrease(command.getFromMembershipId(), command.getAmount());
+            if (!remittanceResult2) {
                 return null;
             }
         }

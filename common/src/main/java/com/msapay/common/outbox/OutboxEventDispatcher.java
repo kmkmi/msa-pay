@@ -2,34 +2,31 @@ package com.msapay.common.outbox;
 
 import javax.persistence.EntityManager;
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 
-class OutboxEventDispatcher {
-
-    private static final Logger logger = LoggerFactory.getLogger(OutboxEventDispatcher.class);
+@Component
+@Slf4j
+public class OutboxEventDispatcher {
 
     private final EntityManager entityManager;
-    private final boolean removeAfterInsert;
+    private final boolean removeAfterInsert = true; 
 
-    OutboxEventDispatcher(EntityManager entityManager) {
-        this(entityManager, true);
-    }
-
-    OutboxEventDispatcher(EntityManager entityManager, boolean removeAfterInsert) {
+    @Autowired
+    public OutboxEventDispatcher(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.removeAfterInsert = removeAfterInsert;
     }
 
     @EventListener
-    @Transactional(propagation = MANDATORY)
+    @Transactional(propagation = REQUIRED)
     public void on(OutboxEvent<?, ?> event) {
         try (var session = entityManager.unwrap(Session.class)) {
-            logger.info("An exported event was found for type {}", event.type());
+            log.info("An exported event was found for type {}", event.type());
 
             // Unwrap to Hibernate session and save
             var outbox = new Outbox(event);

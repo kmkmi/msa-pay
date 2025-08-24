@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -19,10 +20,13 @@ import static lombok.AccessLevel.PRIVATE;
 @Entity
 @Table(name = "outboxevent")
 @NoArgsConstructor(access = PRIVATE)
+@Accessors(fluent = true)
 public class Outbox implements Serializable {
 
     @Id
     private UUID id;
+    
+    @Column(name = "timestamp")
     private Instant timestamp;
 
     @Column(name = "aggregateid")
@@ -30,6 +34,8 @@ public class Outbox implements Serializable {
 
     @Column(name = "aggregatetype")
     private String aggregateType;
+    
+    @Column(name = "type")
     private String type;
 
     @Column(columnDefinition = "TEXT")

@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 public class CommonHttpClient {
@@ -23,7 +22,14 @@ public class CommonHttpClient {
                 .GET()
                 .build();
 
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        // 응답 상태 코드 확인하여 에러 응답이면 예외 발생
+        if (response.statusCode() >= 400) {
+            throw new RuntimeException("External service error: " + response.statusCode() + " - " + response.body());
+        }
+        
+        return response;
     }
     
     public HttpResponse<String> sendPostRequest(String url, String body) throws IOException, InterruptedException {
@@ -33,7 +39,14 @@ public class CommonHttpClient {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        // 응답 상태 코드 확인하여 에러 응답이면 예외 발생
+        if (response.statusCode() >= 400) {
+            throw new RuntimeException("External service error: " + response.statusCode() + " - " + response.body());
+        }
+        
+        return response;
     }
 }
 

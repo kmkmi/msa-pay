@@ -29,18 +29,21 @@ public class SettlementTasklet implements  Tasklet {
         // 뱅킹 정보(계좌번호) 를 가져와서
         Map<String, FirmbankingRequestInfo> franchiseIdToBankAccountMap = new HashMap<>();
         for (Payment payment : normalStatusPaymentList) {
-            RegisteredBankAccountAggregateIdentifier entity = getRegisteredBankAccountPort.getRegisteredBankAccount(payment.getFranchiseId());
-            franchiseIdToBankAccountMap.put(payment.getFranchiseId()
-            , new FirmbankingRequestInfo(entity.getBankName(), entity.getBankAccountNumber()));
+            franchiseIdToBankAccountMap.computeIfAbsent(payment.getFranchiseId(),
+                    franchiseId -> {
+                        RegisteredBankAccountAggregateIdentifier entity =
+                                getRegisteredBankAccountPort.getRegisteredBankAccount(franchiseId);
+                        return new FirmbankingRequestInfo(entity.getBankName(), entity.getBankAccountNumber());
+                    });
         }
 
         // 3. 각 franchiseId 별로, 정산 금액을 계산해주고
-        // 수수료를 제하지 않았어요.
+        // 수수료 차감
         for (Payment payment : normalStatusPaymentList) {
             FirmbankingRequestInfo firmbankingRequestInfo = franchiseIdToBankAccountMap.get(payment.getFranchiseId());
             double fee = Double.parseDouble(payment.getFranchiseFeeRate());
-            int caculatedPrice = (int) ((100 - fee) * payment.getRequestPrice() * 100);
-            firmbankingRequestInfo.setMoneyAmount(firmbankingRequestInfo.getMoneyAmount() + caculatedPrice);
+            int calculatedPrice = (int) ((100 - fee) * payment.getRequestPrice() * 100);
+            firmbankingRequestInfo.setMoneyAmount(firmbankingRequestInfo.getMoneyAmount() + calculatedPrice);
         }
 
         // 4. 계산된 금액을 펌뱅킹 요청해주고

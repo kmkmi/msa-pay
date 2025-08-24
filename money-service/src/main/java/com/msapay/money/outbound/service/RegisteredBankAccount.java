@@ -15,6 +15,6 @@ public class RegisteredBankAccount {
     private String bankName;
 
     private String bankAccountNumber;
-    private boolean linkedStatusIsValid;
+    private boolean linkedStatusvalid;
     private String aggregateIdentifier;
 }

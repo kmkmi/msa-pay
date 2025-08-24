@@ -1,5 +1,6 @@
 package com.msapay.banking.service.port;
 
+import com.msapay.banking.controller.command.GetBankAccountBalanceCommand;
 import com.msapay.banking.persistence.FirmbankingRequestJpaEntity;
 import com.msapay.banking.domain.FirmbankingRequest;
 

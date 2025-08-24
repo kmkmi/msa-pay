@@ -1,5 +1,6 @@
 package com.msapay.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
+@Slf4j
 @Component
 public class LoggingProducer {
     private final KafkaProducer<String, String> producer;
@@ -33,10 +35,9 @@ public class LoggingProducer {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
         producer.send(record, (metadata, exception) -> {
             if (exception == null) {
-                // System.out.println("Message sent successfully. Offset: " + metadata.offset());
+                log.debug("Message sent successfully. Offset: {}", metadata.offset());
             } else {
-                exception.printStackTrace();
-                // System.err.println("Failed to send message: " + exception.getMessage());
+                log.error("Failed to send message: {}", exception.getMessage(), exception);
             }
         });
     }

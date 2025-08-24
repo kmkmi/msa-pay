@@ -27,7 +27,6 @@ public class RegisterMembershipService implements RegisterMembershipUseCase {
                 new Membership.MembershipValid(command.isValid()),
                 new Membership.MembershipCorp(command.isCorp())
         );
-        // entity -> Membership
         return membershipMapper.mapToDto(membershipDto);
     }
 

@@ -62,6 +62,12 @@ services:
       - LOGGING_TOPIC=msa.logging.out.stdout
       - SERVICE_MEMBERSHIP_URL=http://membership-service:8080
       - SERVICE_BANKING_URL=http://banking-service:8080
+      - KAFKA_TOPICS_FIRMBANKING_REQUEST=firmbanking-request
+      - KAFKA_TOPICS_FIRMBANKING_RESULT=firmbanking-result
+      - KAFKA_TOPICS_COMPENSATE_FIRMBANKING=compensate-firmbanking
+      - KAFKA_TOPICS_COMPENSATE_FIRMBANKING_RESULT=compensate-firmbanking-result
+      - KAFKA_TOPICS_COMPENSATE_INCREASE_MONEY_RESULT=compensate-increase-money-result
+      - KAFKA_TOPICS_COMPENSATE_INCREASE_MONEY=compensate-increase-money
   money-service:
     image: msa-pay-money-service:1.0.0
     networks:
@@ -84,6 +90,11 @@ services:
       - TASK_RESULT_TOPIC=msa.task.result.topic
       - SERVICE_MEMBERSHIP_URL=http://membership-service:8080
       - SERVICE_BANKING_URL=http://banking-service:8080
+      - KAFKA_TOPICS_MONEY_INCREASE_REQUEST=money-increase-request
+      - KAFKA_TOPICS_MONEY_INCREASE_RESULT=money-increase-result
+      - KAFKA_TOPICS_COMPENSATE_INCREASE_MONEY_RESULT=compensate-increase-money-result
+      - KAFKA_TOPICS_COMPENSATE_FIRMBANKING_RESULT=compensate-firmbanking-result
+      - KAFKA_TOPICS_COMPENSATE_INCREASE_MONEY=compensate-increase-money
   remittance-service:
     image: msa-pay-remittance-service:1.0.0
     networks:
@@ -242,6 +253,8 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
       - KAFKA_CLUSTERS_BOOTSTRAPSERVERS=kafka:29092
       - LOGGING_TOPIC=msa.logging.out.stdout
       - TASK_TOPIC=msa.task.topic
@@ -253,6 +266,14 @@ services:
       - SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
       - SPRING_KAFKA_PRODUCER_KEY_SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
       - SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - KAFKA_TOPICS_FIRMBANKING_REQUEST=firmbanking-request
+      - KAFKA_TOPICS_FIRMBANKING_RESULT=firmbanking-result
+      - KAFKA_TOPICS_MONEY_INCREASE_REQUEST=money-increase-request
+      - KAFKA_TOPICS_MONEY_INCREASE_RESULT=money-increase-result
+      - KAFKA_TOPICS_COMPENSATE_FIRMBANKING=compensate-firmbanking
+      - KAFKA_TOPICS_COMPENSATE_FIRMBANKING_RESULT=compensate-firmbanking-result
+      - KAFKA_TOPICS_COMPENSATE_INCREASE_MONEY=compensate-increase-money
+      - KAFKA_TOPICS_COMPENSATE_INCREASE_MONEY_RESULT=compensate-increase-money-result
 
   vault:
     image: vault:1.13.1

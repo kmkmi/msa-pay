@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table(name = "money_changing_request")
@@ -32,12 +31,12 @@ public class MoneyChangingRequestJpaEntity {
 
     private String uuid;
 
-    public MoneyChangingRequestJpaEntity(String targetMembershipId, int moneyChangingType, int moneyAmount, Timestamp timestamp, int changingMoneyStatus, UUID uuid) {
+    public MoneyChangingRequestJpaEntity(String targetMembershipId, int moneyChangingType, int moneyAmount, Timestamp timestamp, int changingMoneyStatus, String uuid) {
         this.targetMembershipId = targetMembershipId;
         this.moneyChangingType = moneyChangingType;
         this.moneyAmount = moneyAmount;
         this.timestamp = timestamp;
         this.changingMoneyStatus = changingMoneyStatus;
-        this.uuid = uuid.toString();
+        this.uuid = uuid;
     }
 }

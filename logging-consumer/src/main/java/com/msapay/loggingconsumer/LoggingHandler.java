@@ -1,5 +1,6 @@
 package com.msapay.loggingconsumer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
+@Slf4j
 @Component
 public class LoggingHandler {
     private final KafkaConsumer<String, String> loggingConsumer;
@@ -36,7 +38,7 @@ public class LoggingHandler {
             return;
         }
 
-        System.out.println("Received message: " + record.value());
+        log.info("Received message: {}", record.value());
     }
 
 }

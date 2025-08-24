@@ -7,11 +7,11 @@ public class BankAccount {
     private String bankName;
     private String bankAccountNumber;
 
-    private boolean isValid;
+    private boolean valid;
 
-    public BankAccount(String bankName, String bankAccountNumber, boolean isValid) {
+    public BankAccount(String bankName, String bankAccountNumber, boolean valid) {
         this.bankName = bankName;
         this.bankAccountNumber = bankAccountNumber;
-        this.isValid = isValid;
+        this.valid = valid;
     }
 }

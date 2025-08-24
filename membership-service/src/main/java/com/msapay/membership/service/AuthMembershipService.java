@@ -65,9 +65,9 @@ public class AuthMembershipService implements AuthMembershipUseCase {
     @Override
     public JwtToken refreshJwtTokenByRefreshToken(RefreshTokenCommand command) {
         String requestedRefreshToken = command.getRefreshToken();
-        boolean isValid = authMembershipPort.validateJwtToken(requestedRefreshToken);
+        boolean valid = authMembershipPort.validateJwtToken(requestedRefreshToken);
 
-        if(isValid) {
+        if(valid) {
             Membership.MembershipId membershipId = authMembershipPort.parseMembershipIdFromToken(requestedRefreshToken);
             String membershipIdString = membershipId.getMembershipId();
 
@@ -104,9 +104,9 @@ public class AuthMembershipService implements AuthMembershipUseCase {
     @Override
     public Membership getMembershipByJwtToken(ValidateTokenCommand command) {
         String jwtToken = command.getJwtToken();
-        boolean isValid = authMembershipPort.validateJwtToken(jwtToken);
+        boolean valid = authMembershipPort.validateJwtToken(jwtToken);
 
-        if(isValid) {
+        if(valid) {
             Membership.MembershipId membershipId = authMembershipPort.parseMembershipIdFromToken(jwtToken);
             String membershipIdString = membershipId.getMembershipId();
 

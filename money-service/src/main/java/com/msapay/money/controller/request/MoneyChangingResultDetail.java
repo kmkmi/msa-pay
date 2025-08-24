@@ -1,4 +1,4 @@
-package com.msapay.money.controller;
+package com.msapay.money.controller.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -6,14 +6,13 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Properties;
 
 @Component
+@Slf4j
 public class TaskResultProducer {
-    private static final Logger logger = LoggerFactory.getLogger(TaskResultProducer.class);
     
     private final KafkaProducer<String, String> producer;
     private final String topic;
@@ -41,9 +40,9 @@ public class TaskResultProducer {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, jsonStringToProduce);
         producer.send(record, (metadata, exception) -> {
             if (exception == null) {
-                logger.debug("Message sent successfully. Offset: {}", metadata.offset());
+                log.debug("Message sent successfully. Offset: {}", metadata.offset());
             } else {
-                logger.error("Failed to send message", exception);
+                log.error("Failed to send message", exception);
             }
         });
     }
