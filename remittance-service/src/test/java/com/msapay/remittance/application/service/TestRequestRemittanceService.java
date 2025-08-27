@@ -3,6 +3,7 @@ package com.msapay.remittance.application.service;
 import com.msapay.remittance.persistence.RemittanceRequestJpaEntity;
 import com.msapay.remittance.persistence.RemittanceRequestMapper;
 import com.msapay.remittance.controller.command.RequestRemittanceCommand;
+import com.msapay.remittance.service.RequestRemittanceService;
 import com.msapay.remittance.service.port.RequestRemittancePort;
 import com.msapay.remittance.service.port.banking.BankingPort;
 import com.msapay.remittance.service.port.membership.MembershipPort;

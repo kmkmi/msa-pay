@@ -39,7 +39,6 @@ public class RechargingMoneyResultConsumer {
     private final GetMembershipPort membershipPort;
     private final BankingServicePort bankingServicePort;
     
-    // Kafka Producer 추가 - 결과 전송용
     private final KafkaProducer<String, String> resultProducer;
     private final String resultTopic;
     

@@ -1,7 +1,6 @@
 package com.msapay.sagaorchestrator.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.msapay.common.SagaManager;
 import com.msapay.sagaorchestrator.framework.SagaState;
 import com.msapay.sagaorchestrator.framework.SagaStepStatus;
 import com.msapay.sagaorchestrator.TaskResultProducer;
@@ -46,9 +45,6 @@ class IncreaseMoneySagaTest {
     @Mock
     private SagaStateService sagaStateService;
 
-    @Mock
-    private SagaManager sagaManager;
-
     private IncreaseMoneySaga saga;
     private UUID sagaId;
 
@@ -61,7 +57,7 @@ class IncreaseMoneySagaTest {
         when(sagaState.payload()).thenReturn(objectMapper.createObjectNode());
         when(sagaState.currentStep()).thenReturn(null);
         
-        saga = new IncreaseMoneySaga(eventPublisher, taskResultProducer, objectMapper, sagaStateService, sagaManager);
+        saga = new IncreaseMoneySaga(eventPublisher, taskResultProducer, objectMapper, sagaStateService);
         saga.setSagaState(sagaState);
     }
 

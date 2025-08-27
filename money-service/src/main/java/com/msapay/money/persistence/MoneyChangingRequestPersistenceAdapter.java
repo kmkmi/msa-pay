@@ -54,10 +54,6 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
             entity = memberMoneyRepository.save(entity);
             return entity;
         }
-
-//
-//        entity.setBalance(entity.getBalance() + increaseMoneyAmount);
-//        return  memberMoneyRepository.save(entity);
     }
 
     @Override

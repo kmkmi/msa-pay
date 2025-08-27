@@ -35,7 +35,6 @@ public class FirmbankingEventProducer {
     }
 
     private String createFirmbankingRequestMessage(UUID sagaId, JsonNode payload) {
-        // 간단한 JSON 메시지 생성
         return String.format(
             "{\"sagaId\":\"%s\",\"taskId\":\"%s\",\"membershipId\":\"%s\",\"amount\":%d,\"timestamp\":\"%s\"}",
             sagaId.toString(),

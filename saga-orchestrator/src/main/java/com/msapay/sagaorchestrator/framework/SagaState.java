@@ -96,13 +96,11 @@ public class SagaState {
         this.stepStatus.put(step, sagaStepStatus.name());
     }
 
-    /**
-     * Following SagaSteps To SagaStatus mapping:
-     * 1. SUCCEEDED -> COMPLETED
-     * 2. STARTED, SUCCEEDED -> STARTED
-     * 3. FAILED, COMPENSATED -> ABORTED
-     * 4. COMPENSATING, other -> ABORTING
-     */
+    // SagaSteps To SagaStatus:
+    // 1. SUCCEEDED -> COMPLETED
+    // 2. STARTED, SUCCEEDED -> STARTED
+    // 3. FAILED, COMPENSATED -> ABORTED
+    // 4. COMPENSATING, other -> ABORTING
     public void advanceSagaStatus() {
         var stepStatusSet = stepStatusToSet();
         log.info("advanceSagaStatus called - current stepStatusSet: {}, current sagaStatus: {}", 

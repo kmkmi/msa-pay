@@ -34,8 +34,8 @@ public class RegisterMembershipControllerTest {
                 new Membership.MembershipName("name"),
                 new Membership.MembershipEmail("email"),
                 new Membership.MembershipAddress("address"),
-                new Membership.Membershipvalid(true),
-                new Membership.Membershipcorp(false),
+                new Membership.MembershipValid(true),
+                new Membership.MembershipCorp(false),
                 new Membership.MembershipRefreshToken("")
         );
 
